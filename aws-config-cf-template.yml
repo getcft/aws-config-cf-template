@@ -1,0 +1,134 @@
+# Copyright [2020] [Phil Chen]
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#    http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'The AWS CloudFormation template creates KMS encryption keys for Config and S3, an encrypted S3 bucket, and enables Config for the account'
+
+Resources:
+  # KMS S3 Config Service encryption key
+  s3configKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-s3config
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Join
+                - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':root'
+            Action: 'kms:*'
+            Resource: '*'
+  s3configKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/s3config
+      TargetKeyId:
+        Ref: s3configKey
+
+  # Build AWS Config Service S3 Bucket for Storage
+  AWSConfigS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            KMSMasterKeyID: !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${s3configKeyAlias}'
+            SSEAlgorithm: 'aws:kms'
+
+  # Build AWS Config Recorder
+  ConfigRecorder:
+    Type: 'AWS::Config::ConfigurationRecorder'
+    Properties:
+      Name: 'ConfigRecoder'
+      RecordingGroup:
+        AllSupported: true
+        IncludeGlobalResourceTypes: true
+      RoleARN: !GetAtt
+        - AWSIAM
+        - Arn
+
+  # Build IAM Role for Config
+  AWSIAM:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - config.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      Path: /
+      Policies:
+        - PolicyName: S3-access
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:PutObject'
+                Resource: !Join
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref AWSConfigS3Bucket
+                    - /AWSLogs/
+                    - !Ref 'AWS::AccountId'
+                    - /*
+                Condition:
+                  StringLike:
+                    's3:x-amz-acl': bucket-owner-full-control
+              - Effect: Allow
+                Action:
+                  - 's3:GetBucketAcl'
+                Resource: !Join
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref AWSConfigS3Bucket
+
+  # Create Config Delivery Channel
+  DeliveryChannel:
+    Type: 'AWS::Config::DeliveryChannel'
+    Properties:
+      S3BucketName: !Ref AWSConfigS3Bucket
+
+Outputs:
+    S3KMSKeyAlias:
+        Description: 'S3 KMS Key Alias'
+        Value:
+            Ref: 's3configKeyAlias'
+    AWSIAM:
+        Description: 'IAM Role for Config'
+        Value:
+            Ref: 'AWSIAM'     
+    AWSConfigS3Bucket:
+        Description: 'Encrypted S3 Bucket for Config Logs'
+        Value:
+            Ref: 'AWSConfigS3Bucket'
+    ConfigRecorder:
+        Description: 'Config Recorder'
+        Value:
+            Ref: 'ConfigRecorder'
+    DeliveryChannel:
+        Description: 'Config Delivery Channel'
+        Value:
+            Ref: 'DeliveryChannel'
