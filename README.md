@@ -1,9 +1,7 @@
----
-title: Config AWS CloudFormation Template
-date: "2019-04-10"
-description: This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/config/" target="_blank">AWS Config</a>, a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. Config continuously monitors and records your AWS resource configurations and allows you to automate the evaluation of recorded configurations against desired configurations. The AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for Config and <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables Config for the account.
----
-author: <a href="https://philchen.com" target="_blank">Phil Chen</a>
+# aws-config-cf-template
+[![Build Status](https://travis-ci.org/getcft/aws-config-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-config-cf-template)
+
+## Description
 
 This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/config/" target="_blank">AWS Config</a>, a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. Config continuously monitors and records your AWS resource configurations and allows you to automate the evaluation of recorded configurations against desired configurations. The AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for Config and <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables Config for the account.
 
