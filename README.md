@@ -3,9 +3,9 @@
 
 ## Description
 
-This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/config/" target="_blank">AWS Config</a>, a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. Config continuously monitors and records your AWS resource configurations and allows you to automate the evaluation of recorded configurations against desired configurations. The AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for Config and <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables Config for the account.
+This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/config/" target="_blank">AWS Config</a>, a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. Config continuously monitors and records your AWS resource configurations and allows you to automate the evaluation of recorded configurations against desired configurations. The AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables Config for the account.
 
-Config logs are encrypted (AES-256) and stored in an encrypted (AES-256) S3 bucket that the CloudFormation template creates. For security and compliance it is important all AWS account activity is tracked and stored for tracking and analysis.
+Config logs are stored in an encrypted (AES-256) S3 bucket that the CloudFormation template creates. For security and compliance it is important all AWS account activity is tracked and stored for tracking and analysis.
 
 <img src="aws-config.png" alt="AWS Config" />
 
