@@ -22,7 +22,7 @@ Resources:
     Properties:
       KeyPolicy:
         Version: 2012-10-17
-        Id: key-h-s3config
+        Id: key-s3config
         Statement:
           - Sid: Enable IAM User Permissions
             Effect: Allow
@@ -37,7 +37,7 @@ Resources:
   s3configKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: alias/h-s3config
+      AliasName: alias/s3config
       TargetKeyId:
         Ref: s3configKey
 
@@ -56,7 +56,7 @@ Resources:
   ConfigRecorder:
     Type: 'AWS::Config::ConfigurationRecorder'
     Properties:
-      Name: 'HConfigRecoder'
+      Name: 'ConfigRecoder'
       RecordingGroup:
         AllSupported: true
         IncludeGlobalResourceTypes: true
